@@ -1,0 +1,57 @@
+#是否避孕MLP
+import numpy as np
+from sklearn.metrics import confusion_matrix,classification_report
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from sklearn.metrics import roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
+
+"""資料準備"""
+
+df= pd.read_csv('data23combine.csv')
+df_target1 = df[df['ContraceptiveMethodUsed'] == 1].sample(500)
+df_target2 = df[df['ContraceptiveMethodUsed'] == 2].sample(500)
+# 將兩個數據框合併起來
+df_balanced = pd.concat([df_target1, df_target2])
+
+x = df_balanced.drop(labels=['ContraceptiveMethodUsed'],axis=1).values 
+y = df_balanced['ContraceptiveMethodUsed']-1 #是否避孕
+
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2) #切分訓練測試集
+"""模型"""
+dim = 9 #九個特徵
+category = 2 #2種答案
+model=tf.keras.models.Sequential()
+model.add(tf.keras.layers.Dense(units=10,activation=tf.nn.relu,input_shape=(dim,)))
+model.add(tf.keras.layers.Dense(units=10,activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(units=10,activation=tf.nn.relu))
+model.add(tf.keras.layers.Dense(units=category,activation=tf.nn.softmax))
+"""編譯"""
+model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+"""訓練"""
+model.fit(x_train,y_train,epochs=100)
+
+"""預測"""
+predict= model.predict(x_test)
+print(f'predict={predict}')
+y_predicted = np.argmax(predict,axis=1) + 1
+y_test = y_test+1
+print(confusion_matrix(y_test, y_predicted))
+print(classification_report(y_test, y_predicted))
+# 計算 ROC 曲線的各項參數
+fpr, tpr, thresholds = roc_curve(y_test-1, y_predicted-1)
+
+# 計算 AUC 值
+auc = roc_auc_score(y_test-1, y_predicted-1)
+
+# 繪製 ROC 曲線
+plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % auc)
+plt.plot([0, 1], [0, 1], 'k--')  # 隨便畫一條對角線
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC')
+plt.legend(loc="lower right")
+plt.show()

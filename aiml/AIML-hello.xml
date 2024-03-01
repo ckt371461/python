@@ -1,0 +1,42 @@
+<aiml version='1.0.1' encoding="UTF-8"> <!--開始-->
+    <category>  <!--狀況一-->
+        <pattern>HELLO</pattern>    <!--判斷關鍵字-->
+        <template>
+            Well,Hello!             <!--c回應的答案-->
+        </template>
+    </category>
+    <category>
+        <pattern>WHAT DO YOU WANT TO EAT</pattern> <!--不能小寫，不能符號-->
+        <template>
+            <random>    <!--亂數回答-->
+                <li>Pizza.</li>   <!--用來表示多個回應-->
+                <li>Apple.</li>
+                <li>Noddle.</li>
+            </random>
+        </template>
+    </category>    
+    <category>
+        <pattern>I LIKE *</pattern> <!--用星星表示要指定的字，並用<star/>取出-->
+        <template>
+            I too like <star/> <!--沒加斜線會出錯-->
+        </template>
+    </category>
+    <category>
+        <pattern>DO YOU LIKE * OR *</pattern>
+        <template>
+            I like <star index='1'/> better than <star index="2"/> <!--用index 指定選項(單雙引號都可以)-->
+        </template>
+    </category>
+    <category>
+        <pattern>I AM *</pattern>
+        <template>
+            Hello <set name='username'>Mr./Ms.<star/></set> <!--用set將*加上Mr/Ms儲存在username裡-->
+        </template>
+    </category>
+    <category>
+        <pattern>GOOD NIGHT</pattern>
+        <template>
+            Hi <get name="username"/>  <!--用get 取得name裡面的內容--> 
+        </template>
+    </category>
+</aiml>

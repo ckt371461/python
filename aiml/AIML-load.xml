@@ -1,0 +1,9 @@
+<aiml version='1.0.1' encoding="UTF-8">
+    <category>
+        <pattern>LOAD AIML B</pattern>
+        <template>
+            <learn>AIML-hello.xml</learn>  <!--讀這個檔案-->
+            <learn>AIML-other.xml</learn>
+        </template>
+    </category>
+</aiml>
